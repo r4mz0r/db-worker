@@ -88,7 +88,7 @@ public class DB {
         try {
             if (dbc.getTnsName().contains("jdbc:")) {
                 String dbURL = dbc.getTnsName();
-                if(dbc.isDebug()) {
+                if (dbc.isDebug()) {
                     LOGGER.info("Connect to MySQL Database to: " + dbURL);
                 }
                 Properties properties = new Properties();
@@ -103,7 +103,7 @@ public class DB {
                 connection = java.sql.DriverManager.getConnection(dbURL, strUserID, strPassword);
                 prepareDbms();
             }
-            if(dbc.isDebug()) {
+            if (dbc.isDebug()) {
                 LOGGER.info("Connection established");
             }
         } catch (Exception ex) {
@@ -127,7 +127,7 @@ public class DB {
      */
 
     public DB query(String sql) throws SQLException {
-        if(dbc.isDebug()) {
+        if (dbc.isDebug()) {
             LOGGER.info("SQL REQUEST: \n" + sql);
         }
         // Очистка данных
@@ -446,7 +446,7 @@ public class DB {
      *
      * @param i      - row ID
      * @param column - column name
-     * @return Object - Object
+     * @return Object
      */
     public Object getObject(int i, String column) {
         int index = headersIndex.get(column);
@@ -457,7 +457,7 @@ public class DB {
      * Get Column name using column ID
      *
      * @param i - column ID
-     * @return header - column name
+     * @return header
      */
     public String getColumnName(int i) {
         return header.get(i);
@@ -468,7 +468,7 @@ public class DB {
      *
      * @param i      - row ID
      * @param column - column name
-     * @return int - Int
+     * @return int
      */
     public int getInt(int i, String column) {
         return (Integer) getObject(i, column);
@@ -479,18 +479,52 @@ public class DB {
      *
      * @param i      - row ID
      * @param column - column name
-     * @return float - Float
+     * @return float
      */
     public float getFloat(int i, String column) {
         return ((BigDecimal) getObject(i, column)).floatValue();
     }
 
     /**
+     * Get Long from rowID and column
+     *
+     * @param i      - row ID
+     * @param column - column name
+     * @return long
+     */
+    public long getLong(int i, String column) {
+        return (long) getObject(i, column);
+    }
+
+    /**
+     * Get Timestamp from rowID and column
+     *
+     * @param i      - row ID
+     * @param column - column name
+     * @return Timestamp
+     */
+    public Timestamp getTimestamp(int i, String column) {
+        return (Timestamp) getObject(i, column);
+    }
+
+    /**
+     * Get Double from rowID and column
+     *
+     * @param i      - row ID
+     * @param column - column name
+     * @return Double
+     */
+    public double getDouble(int i, String column) {
+        return (Double) getObject(i, column);
+    }
+
+
+    /**
      * Get String from rowID and column
      *
      * @param i      - row ID
      * @param column - column name
-     * @return String - String
+     * @return String
      */
     public String getString(int i, String column) {
         Object obj = getObject(i, column);
@@ -506,7 +540,7 @@ public class DB {
      *
      * @param i      - row ID
      * @param column - column name
-     * @return Date - Date
+     * @return Date
      */
     public Date getDate(int i, String column) {
         Object obj = getObject(i, column);

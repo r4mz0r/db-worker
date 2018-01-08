@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.r4mz0r</groupId>
     <artifactId>db-worker</artifactId>
-    <version>1.7-SNAPSHOT</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
     <name>db-worker</name>
     <url>https://github.com/r4mz0r/db-worker</url>
@@ -29,7 +30,7 @@
         <developerConnection>scm:git:https://github.com/r4mz0r/db-worker.git</developerConnection>
         <url>https://github.com/r4mz0r/db-worker/tree/master</url>
         <connection>scm:git:git://github.com/r4mz0r/db-worker.git</connection>
-  </scm>
+    </scm>
 
     <properties>
         <!-- Maven -->
