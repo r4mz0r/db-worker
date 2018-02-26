@@ -5,7 +5,7 @@
 
     <groupId>com.github.r4mz0r</groupId>
     <artifactId>db-worker</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
     <packaging>jar</packaging>
     <name>db-worker</name>
     <url>https://github.com/r4mz0r/db-worker</url>
@@ -41,6 +41,7 @@
         <!-- DB -->
         <mysql.connector.java.version>6.0.6</mysql.connector.java.version>
         <ojdbc6.version>11.2.0.3</ojdbc6.version>
+        <postgresql.version>42.2.1</postgresql.version>
         <!-- Logging -->
         <logback.classic.version>1.1.7</logback.classic.version>
         <logback.core.version>1.1.7</logback.core.version>
@@ -150,6 +151,11 @@
             <groupId>oracle</groupId>
             <artifactId>ojdbc6</artifactId>
             <version>${ojdbc6.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

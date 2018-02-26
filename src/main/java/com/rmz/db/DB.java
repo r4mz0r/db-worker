@@ -86,22 +86,36 @@ public class DB {
      */
     private void openConnection() {
         try {
-            if (dbc.getTnsName().contains("jdbc:")) {
-                String dbURL = dbc.getTnsName();
-                if (dbc.isDebug()) {
-                    LOGGER.info("Connect to MySQL Database to: " + dbURL);
+            String dbURL = dbc.getTnsName();
+            String dbType = dbURL.split(":")[1];
+            if (dbURL.contains("jdbc:")) {
+                if ("oracle".equals(dbType)) {
+                    if (dbc.isDebug()) {
+                        LOGGER.info("Connect to Oracle database to: " + dbURL);
+                    }
+                    dbURL = "jdbc:oracle:thin:@" + getConnectionString(dbURL);
+                    String strUserID = dbc.getUserName();
+                    String strPassword = dbc.getPassword();
+                    connection = java.sql.DriverManager.getConnection(dbURL, strUserID, strPassword);
+                    prepareDbms();
+                } else {
+                    switch (dbType) {
+                        case "mysql":
+                            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
+                            break;
+                        case "postgresql":
+                            Class.forName("org.postgresql.Driver").newInstance();
+                            break;
+                        default:
+                            LOGGER.error("DB type " + dbType + " is not available!");
+                    }
+                    Properties properties = new Properties();
+                    properties.put("user", dbc.getUserName());
+                    properties.put("password", dbc.getPassword());
+                    connection = DriverManager.getConnection(dbURL, properties);
                 }
-                Properties properties = new Properties();
-                properties.put("user", dbc.getUserName());
-                properties.put("password", dbc.getPassword());
-                Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-                connection = DriverManager.getConnection(dbURL, properties);
             } else {
-                String dbURL = "jdbc:oracle:thin:@" + getConnectionString(dbc.getTnsName());
-                String strUserID = dbc.getUserName();
-                String strPassword = dbc.getPassword();
-                connection = java.sql.DriverManager.getConnection(dbURL, strUserID, strPassword);
-                prepareDbms();
+                LOGGER.error("Cannot read a connection string!");
             }
             if (dbc.isDebug()) {
                 LOGGER.info("Connection established");
