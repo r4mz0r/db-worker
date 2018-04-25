@@ -4,7 +4,7 @@
   <groupId>com.github.r4mz0r</groupId>
   <artifactId>db-worker</artifactId>
   <name>db-worker</name>
-  <version>1.5</version>
+  <version>1.6</version>
   <description>Library for working with MySQL and Oracle Databases</description>
   <url>https://github.com/r4mz0r/db-worker</url>
   <developers>
@@ -121,7 +121,7 @@
     </snapshotRepository>
   </distributionManagement>
   <properties>
-    <postgresql.version>42.2.1</postgresql.version>
+    <postgresql.version>42.2.2</postgresql.version>
     <ojdbc6.version>11.2.0.3</ojdbc6.version>
     <mysql.connector.java.version>6.0.6</mysql.connector.java.version>
     <slf4j.log4j12.version>1.7.12</slf4j.log4j12.version>

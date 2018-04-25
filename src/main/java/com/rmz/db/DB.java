@@ -1,6 +1,7 @@
 package com.rmz.db;
 
 import org.apache.log4j.Logger;
+import org.postgresql.PGResultSetMetaData;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -22,7 +23,11 @@ public class DB {
     private static HashMap<String, String> tns = new HashMap<>();
     private static boolean loaded = false;
 
+    private String dbType;
+    private String dbURL;
+
     private ResultSetMetaData resultSetMetaData;
+    private PGResultSetMetaData pgResultSetMetaData;
     private List<Object[]> data = new ArrayList<>();
     private HashMap<String, Integer> headersIndex = new HashMap<>();
     private ArrayList<String> header = new ArrayList<>();
@@ -53,6 +58,7 @@ public class DB {
         if (dbc.isDebug()) {
             LOGGER.info("Connection to DB -> " + dbName);
         }
+
         // Open DB connection
         openConnection();
     }
@@ -86,34 +92,40 @@ public class DB {
      */
     private void openConnection() {
         try {
-            String dbURL = dbc.getTnsName();
-            String dbType = dbURL.split(":")[1];
+
+            dbURL = dbc.getTnsName();
+            dbType = dbURL.split(":")[1];
+
             if (dbURL.contains("jdbc:")) {
-                if ("oracle".equals(dbType)) {
-                    if (dbc.isDebug()) {
-                        LOGGER.info("Connect to Oracle database to: " + dbURL);
-                    }
-                    dbURL = "jdbc:oracle:thin:@" + getConnectionString(dbURL);
-                    String strUserID = dbc.getUserName();
-                    String strPassword = dbc.getPassword();
-                    connection = java.sql.DriverManager.getConnection(dbURL, strUserID, strPassword);
-                    prepareDbms();
-                } else {
-                    switch (dbType) {
-                        case "mysql":
+                DBEnums.TYPE matchedValue = DBEnums.TYPE.ifContains(dbType);
+                if (matchedValue != null) {
+                    switch (matchedValue) {
+                        case ORACLE:
+                            if (dbc.isDebug()) {
+                                LOGGER.info("Connect to Oracle database to: " + dbURL);
+                            }
+                            dbURL = "jdbc:oracle:thin:@" + getConnectionString(dbURL);
+                            String strUserID = dbc.getUserName();
+                            String strPassword = dbc.getPassword();
+                            connection = java.sql.DriverManager.getConnection(dbURL, strUserID, strPassword);
+                            prepareDbms();
+                            break;
+                        case MYSQL:
                             Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
                             break;
-                        case "postgresql":
+                        case POSTGRES:
                             Class.forName("org.postgresql.Driver").newInstance();
                             break;
-                        default:
-                            LOGGER.error("DB type " + dbType + " is not available!");
+
                     }
-                    Properties properties = new Properties();
-                    properties.put("user", dbc.getUserName());
-                    properties.put("password", dbc.getPassword());
-                    connection = DriverManager.getConnection(dbURL, properties);
+                } else {
+                    LOGGER.error("DB type " + dbType + " is not available!");
                 }
+
+                Properties properties = new Properties();
+                properties.put("user", dbc.getUserName());
+                properties.put("password", dbc.getPassword());
+                connection = DriverManager.getConnection(dbURL, properties);
             } else {
                 LOGGER.error("Cannot read a connection string!");
             }
@@ -130,6 +142,7 @@ public class DB {
                 }
             }
         }
+
     }
 
     /**
@@ -144,7 +157,7 @@ public class DB {
         if (dbc.isDebug()) {
             LOGGER.info("SQL REQUEST: \n" + sql);
         }
-        // Очистка данных
+        // Data clear
         data.clear();
         headersIndex.clear();
         header.clear();
@@ -155,19 +168,24 @@ public class DB {
                 sql.toUpperCase().indexOf("INSERT") == 0 ||
                 sql.toUpperCase().indexOf("DECLARE") == 0 ||
                 sql.toUpperCase().indexOf("BEGIN") == 0;
-        // Запросы, не возвращающие resultSet
+        // Requests without resultSet
         if (isDML) {
             sqlStatement.executeUpdate(sql);
             return this;
         }
         ResultSet resultSet = sqlStatement.executeQuery(sql);
+
+        // Set resultSetMetaData
         resultSetMetaData = resultSet.getMetaData();
-        //Получаем названия заголовков
+        if (DBEnums.TYPE.POSTGRES.getTypeName().equals(dbType)) {
+            pgResultSetMetaData = (PGResultSetMetaData) resultSetMetaData;
+        }
+        // Get headers name
         for (int i = 0; i < resultSetMetaData.getColumnCount(); ++i) {
             headersIndex.put(resultSetMetaData.getColumnName(i + 1), i);
             header.add(resultSetMetaData.getColumnName(i + 1));
         }
-        //Заполняем data получеными данными
+        // Set data object
         while (resultSet.next()) {
             Object[] obj = new Object[resultSetMetaData.getColumnCount()];
             for (int i = 0; i < resultSetMetaData.getColumnCount(); ++i) {
@@ -453,6 +471,10 @@ public class DB {
      */
     public ResultSetMetaData getMetaData() {
         return resultSetMetaData;
+    }
+
+    public PGResultSetMetaData getPGMetaData() {
+        return pgResultSetMetaData;
     }
 
     /**
