@@ -1,7 +1,5 @@
 package com.rmz.db;
 
-import org.apache.log4j.Logger;
-
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
@@ -17,8 +15,6 @@ public class Props {
     private static final String FILE_APP_PROP_PATH = "src/main/resources/config/application.properties";
     private static final String ENCODING = "UTF-8";
 
-    private static final Logger LOGGER = Logger.getLogger(Props.class);
-
     private Props() {
         try {
             properties = new Properties();
@@ -26,7 +22,7 @@ public class Props {
             InputStreamReader inputStreamReader = new InputStreamReader(reader, ENCODING);
             properties.load(inputStreamReader);
         } catch (Exception ex) {
-            LOGGER.error("Ошибка при попытке получения параметров из файла: " + FILE_APP_PROP_PATH + "!", ex);
+            throw new Error("Ошибка при попытке получения параметров из файла: " + FILE_APP_PROP_PATH + "!", ex);
         }
     }
 
@@ -41,7 +37,7 @@ public class Props {
     private String getProp(String name) {
         String val = getProps().getProperty(name, "");
         if (val.isEmpty()) {
-            LOGGER.info("Property {" + name + "} was not found in properties file");
+            System.out.println("\r\nProperty {" + name + "} was not found in properties file");
         }
 
         return val.trim();

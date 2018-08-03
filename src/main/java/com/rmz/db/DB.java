@@ -1,6 +1,5 @@
 package com.rmz.db;
 
-import org.apache.log4j.Logger;
 import org.postgresql.PGResultSetMetaData;
 
 import java.io.BufferedReader;
@@ -16,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * DataBase class
  *
- * @author mekhdiev-rr
+ * @author Mekhdiev Ramil
  */
 public class DB {
 
@@ -40,8 +39,6 @@ public class DB {
 
     private DBConfig dbc;
 
-    private static final Logger LOGGER = Logger.getLogger(DB.class);
-
     /**
      * Create new DB instance
      *
@@ -56,7 +53,7 @@ public class DB {
                 , Props.get("db." + dbName + ".password")
                 , debugMode);
         if (dbc.isDebug()) {
-            LOGGER.info("Connection to DB -> " + dbName);
+            System.out.println("\r\nConnection to DB -> " + dbName);
         }
 
         // Open DB connection
@@ -75,7 +72,7 @@ public class DB {
     public DB(String dbName, String dbServer, String dbUser, String dbPassword, boolean isDebug) {
         dbc = new DBConfig(dbName, dbServer, dbUser, dbPassword, isDebug);
         if (dbc.isDebug()) {
-            LOGGER.info("Connection to DB -> " + dbName);
+            System.out.println("\r\nConnection to DB -> " + dbName);
         }
         // Open DB connection
         openConnection();
@@ -102,7 +99,7 @@ public class DB {
                     switch (matchedValue) {
                         case ORACLE:
                             if (dbc.isDebug()) {
-                                LOGGER.info("Connect to Oracle database to: " + dbURL);
+                                System.out.println("\r\nConnect to Oracle database to: " + dbURL);
                             }
                             dbURL = "jdbc:oracle:thin:@" + getConnectionString(dbURL);
                             String strUserID = dbc.getUserName();
@@ -119,7 +116,7 @@ public class DB {
 
                     }
                 } else {
-                    LOGGER.error("DB type " + dbType + " is not available!");
+                    System.out.println("\r\nDB type " + dbType + " is not available!");
                 }
 
                 Properties properties = new Properties();
@@ -127,20 +124,13 @@ public class DB {
                 properties.put("password", dbc.getPassword());
                 connection = DriverManager.getConnection(dbURL, properties);
             } else {
-                LOGGER.error("Cannot read a connection string!");
+                System.out.println("\r\nCannot read a connection string!");
             }
             if (dbc.isDebug()) {
-                LOGGER.info("Connection established");
+                System.out.println("\r\nConnection established");
             }
         } catch (Exception ex) {
-            LOGGER.error("Cannot connect to database server!", ex);
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException sqlEx) {
-                    LOGGER.error("Cannot close connection to database server!", sqlEx);
-                }
-            }
+            throw new Error("Cannot connect to database server!", ex);
         }
 
     }
@@ -155,7 +145,7 @@ public class DB {
 
     public DB query(String sql) throws SQLException {
         if (dbc.isDebug()) {
-            LOGGER.info("SQL REQUEST: \n" + sql);
+            System.out.println("\r\nSQL REQUEST: \n" + sql);
         }
         // Data clear
         data.clear();
@@ -298,7 +288,7 @@ public class DB {
      */
     public void removeRow(int row) {
         if (data.size() <= row) {
-            LOGGER.error("Cannot delete row, if this row doesn't exist!");
+            System.out.println("\r\nCannot delete row, if this row doesn't exist!");
         }
         data.remove(row);
     }
@@ -322,7 +312,7 @@ public class DB {
                 line = br.readLine();
             }
         } catch (IOException e) {
-            LOGGER.error("Exception in TNS reading process : ", e);
+            throw new Error("Exception in TNS reading process : ", e);
         } finally {
             loaded = true;
         }
@@ -389,7 +379,7 @@ public class DB {
         }
         if (data.size() > rows)
             str += "...\n";
-        LOGGER.info("Rows(" + rows + ") data: " + str);
+        System.out.println("\r\nRows(" + rows + ") data: " + str);
         return this;
     }
 
