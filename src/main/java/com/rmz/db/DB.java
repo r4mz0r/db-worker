@@ -157,6 +157,7 @@ public class DB {
                 sql.toUpperCase().indexOf("DELETE") == 0 ||
                 sql.toUpperCase().indexOf("INSERT") == 0 ||
                 sql.toUpperCase().indexOf("DECLARE") == 0 ||
+                sql.toUpperCase().indexOf("CREATE") == 0 ||
                 sql.toUpperCase().indexOf("BEGIN") == 0;
         // Requests without resultSet
         if (isDML) {
